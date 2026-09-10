@@ -31,12 +31,14 @@ FILE: package.json
   "author": "",
   "license": "UNLICENSE",
   "type": "commonjs",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "dependencies": {
     "@sapphire/discord-utilities": "^4.0.0",
     "@sapphire/discord.js-utilities": "7.3.3",
     "@sapphire/fetch": "^3.0.5",
     "@sapphire/framework": "^5.5.0",
-    "@sapphire/plugin-api": "^8.3.1",
     "@sapphire/plugin-editable-commands": "^4.0.4",
     "@sapphire/plugin-logger": "^4.1.0",
     "@sapphire/plugin-subcommands": "^7.0.1",
@@ -64,6 +66,19 @@ FILE: package.json
 
 
 ================================================================================
+FILE: railway.toml
+================================================================================
+
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "npm start"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+
+
+================================================================================
 FILE: README.md
 ================================================================================
 
@@ -77,6 +92,10 @@ A standalone moderation and community bot with active anti-spam, anti-raid, and 
 2. Copy `.env.example` to `.env`, then set `DISCORD_TOKEN` and optionally `OWNER_IDS` and `PREFIX`.
 3. Enable the **Server Members Intent** and **Message Content Intent** in the Discord Developer Portal.
 4. Run `npm start`.
+
+## Railway deployment
+
+Create a new Railway project from this repository. Railway uses `railway.toml` to install dependencies and run `npm start` with Node.js 20 or later. Add `DISCORD_TOKEN` as a Railway environment variable; do not upload a `.env` file. This is a background bot service, so it does not need a public domain or a listening HTTP port.
 
 ## Security controls
 
@@ -928,56 +947,6 @@ class AntibotCommand extends Command {
 }
 
 module.exports = { AntibotCommand };
-
-
-================================================================================
-FILE: src\commands\antiraid.js
-================================================================================
-
-const { Command } = require('@sapphire/framework');
-const { SlashCommandBuilder } = require('discord.js');
-
-class AntiraidCommand extends Command {
-  registerApplicationCommands(registry) {
-    registry.registerChatInputCommand(
-      new SlashCommandBuilder()
-        .setName('antiraid')
-        .setDescription('Show Sentinel anti-raid protection status.')
-        .setDMPermission(false)
-    );
-  }
-
-  async chatInputRun(interaction) {
-    await interaction.reply({content:'Ã°Å¸â€ºÂ¡Ã¯Â¸Â Anti-raid protection: **Ready**. Configure thresholds and actions in your server security settings.',ephemeral:true});
-  }
-}
-
-module.exports = { AntiraidCommand };
-
-
-================================================================================
-FILE: src\commands\antispam.js
-================================================================================
-
-const { Command } = require('@sapphire/framework');
-const { SlashCommandBuilder } = require('discord.js');
-
-class AntispamCommand extends Command {
-  registerApplicationCommands(registry) {
-    registry.registerChatInputCommand(
-      new SlashCommandBuilder()
-        .setName('antispam')
-        .setDescription('Show anti-spam protection status.')
-        .setDMPermission(false)
-    );
-  }
-
-  async chatInputRun(interaction) {
-    await interaction.reply({content:'Anti-spam protection: **Ready**.',ephemeral:true});
-  }
-}
-
-module.exports = { AntispamCommand };
 
 
 ================================================================================
@@ -3637,31 +3606,6 @@ module.exports = { NickresetCommand };
 
 
 ================================================================================
-FILE: src\commands\nukecheck.js
-================================================================================
-
-const { Command } = require('@sapphire/framework');
-const { SlashCommandBuilder } = require('discord.js');
-
-class NukecheckCommand extends Command {
-  registerApplicationCommands(registry) {
-    registry.registerChatInputCommand(
-      new SlashCommandBuilder()
-        .setName('nukecheck')
-        .setDescription('Show channel nuke protection status.')
-        .setDMPermission(false).setDefaultMemberPermissions('0')
-    );
-  }
-
-  async chatInputRun(interaction) {
-    await interaction.reply({content:'Channel nuke protection: **Ready**.',ephemeral:true});
-  }
-}
-
-module.exports = { NukecheckCommand };
-
-
-================================================================================
 FILE: src\commands\online.js
 ================================================================================
 
@@ -3975,56 +3919,6 @@ class QuoteCommand extends Command {
   }
 }
 module.exports = { QuoteCommand };
-
-
-================================================================================
-FILE: src\commands\raidmode.js
-================================================================================
-
-const { Command } = require('@sapphire/framework');
-const { SlashCommandBuilder } = require('discord.js');
-
-class RaidmodeCommand extends Command {
-  registerApplicationCommands(registry) {
-    registry.registerChatInputCommand(
-      new SlashCommandBuilder()
-        .setName('raidmode')
-        .setDescription('Show raid mode state.')
-        .setDMPermission(false)
-    );
-  }
-
-  async chatInputRun(interaction) {
-    await interaction.reply({content:'Raid mode: **Standby**. This status command does not automatically punish members.',ephemeral:true});
-  }
-}
-
-module.exports = { RaidmodeCommand };
-
-
-================================================================================
-FILE: src\commands\raidstatus.js
-================================================================================
-
-const { Command } = require('@sapphire/framework');
-const { SlashCommandBuilder } = require('discord.js');
-
-class RaidstatusCommand extends Command {
-  registerApplicationCommands(registry) {
-    registry.registerChatInputCommand(
-      new SlashCommandBuilder()
-        .setName('raidstatus')
-        .setDescription('Show raid protection status.')
-        .setDMPermission(false)
-    );
-  }
-
-  async chatInputRun(interaction) {
-    await interaction.reply({content:'ðŸ›¡ï¸ Raid protection: **Standby / Ready**.',ephemeral:true});
-  }
-}
-
-module.exports = { RaidstatusCommand };
 
 
 ================================================================================
@@ -4701,56 +4595,6 @@ class SayCommand extends Command {
   }
 }
 module.exports = { SayCommand };
-
-
-================================================================================
-FILE: src\commands\security.js
-================================================================================
-
-const { Command } = require('@sapphire/framework');
-const { SlashCommandBuilder } = require('discord.js');
-
-class SecurityCommand extends Command {
-  registerApplicationCommands(registry) {
-    registry.registerChatInputCommand(
-      new SlashCommandBuilder()
-        .setName('security')
-        .setDescription('Display server security controls.')
-        .setDMPermission(false)
-    );
-  }
-
-  async chatInputRun(interaction) {
-    await interaction.reply({content:'Ã°Å¸â€ºÂ¡Ã¯Â¸Â **Sentinel Security**\nÃ¢â‚¬Â¢ Anti-raid: Ready\nÃ¢â‚¬Â¢ Anti-spam: Ready\nÃ¢â‚¬Â¢ Anti-bot: Ready\nÃ¢â‚¬Â¢ Anti-alt: Ready\nÃ¢â‚¬Â¢ Verification: Available',ephemeral:true});
-  }
-}
-
-module.exports = { SecurityCommand };
-
-
-================================================================================
-FILE: src\commands\securitycheck.js
-================================================================================
-
-const { Command } = require('@sapphire/framework');
-const { SlashCommandBuilder } = require('discord.js');
-
-class SecuritycheckCommand extends Command {
-  registerApplicationCommands(registry) {
-    registry.registerChatInputCommand(
-      new SlashCommandBuilder()
-        .setName('securitycheck')
-        .setDescription('Run a basic security check.')
-        .setDMPermission(false)
-    );
-  }
-
-  async chatInputRun(interaction) {
-    const c=[['Verification level',interaction.guild.verificationLevel>0],['2FA moderation',interaction.guild.mfaLevel>0],['Community',interaction.guild.features.includes('COMMUNITY')]]; await interaction.reply({content:c.map(([n,v])=>`${v?'âœ…':'âš ï¸'} ${n}`).join('\n'),ephemeral:true});
-  }
-}
-
-module.exports = { SecuritycheckCommand };
 
 
 ================================================================================
@@ -6187,11 +6031,16 @@ const client = new SapphireClient({
 	loadMessageCommandListeners: true
 });
 
+// Register protection listeners before connecting so no gateway events are missed.
+new SecurityService(client).start();
+
+process.on('unhandledRejection', (error) => client.logger.error(error));
+process.on('uncaughtException', (error) => client.logger.fatal(error));
+
 const main = async () => {
 	try {
 		client.logger.info('Sentinel is logging in');
 		await client.login(process.env.DISCORD_TOKEN || process.env.TOKEN);
-		new SecurityService(client).start();
 		client.logger.info('Sentinel logged in successfully');
 	} catch (error) {
 		client.logger.fatal(error);
@@ -6217,7 +6066,6 @@ FILE: src\lib\setup.js
 ================================================================================
 
 require('@sapphire/plugin-logger/register');
-require('@sapphire/plugin-api/register');
 require('@sapphire/plugin-editable-commands/register');
 require('@sapphire/plugin-subcommands/register');
 const { ApplicationCommandRegistries, RegisterBehavior } = require('@sapphire/framework');
@@ -6494,74 +6342,6 @@ class UserPrecondition extends AllFlowsPrecondition {
 
 module.exports = {
 	UserPrecondition
-};
-
-
-================================================================================
-FILE: src\routes\hello-world.get.js
-================================================================================
-
-const { Route } = require('@sapphire/plugin-api');
-
-class UserRoute extends Route {
-	run(_request, response) {
-		response.json({ message: 'Hello World' });
-	}
-}
-
-module.exports = {
-	UserRoute
-};
-
-
-================================================================================
-FILE: src\routes\hello-world.post.js
-================================================================================
-
-const { Route } = require('@sapphire/plugin-api');
-
-class UserRoute extends Route {
-	run(_request, response) {
-		response.json({ message: 'Hello World' });
-	}
-}
-
-module.exports = {
-	UserRoute
-};
-
-
-================================================================================
-FILE: src\routes\index.get.js
-================================================================================
-
-const { Route } = require('@sapphire/plugin-api');
-
-class UserRoute extends Route {
-	run(_request, response) {
-		response.json({ message: 'Landing Page!' });
-	}
-}
-
-module.exports = {
-	UserRoute
-};
-
-
-================================================================================
-FILE: src\routes\index.post.js
-================================================================================
-
-const { Route } = require('@sapphire/plugin-api');
-
-class UserRoute extends Route {
-	run(_request, response) {
-		response.json({ message: 'Landing Page!' });
-	}
-}
-
-module.exports = {
-	UserRoute
 };
 
 
