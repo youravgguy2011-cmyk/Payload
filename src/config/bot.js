@@ -1,4 +1,123 @@
-import { logger } from '../utils/logger.js';
+  // =========================
+  // CUSTOM COMMANDS
+  // =========================
+  customCommands: {
+    enabled: true,
+
+    prefix: process.env.PREFIX || "!",
+
+    // Maximum number of custom commands per server.
+    maxPerServer: 100,
+
+    // Maximum response length.
+    maxResponseLength: 2000,
+
+    // Permissions required to manage custom commands.
+    managerPermissions: ["ManageGuild"],
+
+    // Supported placeholders.
+    placeholders: {
+      user: "{user}",
+      username: "{username}",
+      server: "{server}",
+      memberCount: "{memberCount}",
+      userId: "{userId}",
+    },
+
+    // Default custom commands.
+    defaults: {
+      hello: {
+        response: "Hello {user}!",
+        enabled: true,
+      },
+
+      rules: {
+        response: "Please read the server rules before chatting.",
+        enabled: true,
+      },
+
+      info: {
+        response:
+          "Welcome to {server}! There are currently {memberCount} members.",
+        enabled: true,
+      },
+    },
+  },
+          export default botConfig;
+          // =========================
+// CUSTOM COMMAND FUNCTIONS
+// =========================
+
+export function isCustomCommandsEnabled() {
+  return botConfig.customCommands?.enabled === true;
+}
+
+export function getCustomCommandPrefix() {
+  return botConfig.customCommands?.prefix ?? "!";
+}
+
+export function getDefaultCustomCommands() {
+  return botConfig.customCommands?.defaults ?? {};
+}
+
+export function getCustomCommand(name) {
+  if (!name) return null;
+
+  const commands = getDefaultCustomCommands();
+  const commandName = String(name).trim().toLowerCase();
+
+  return commands[commandName] ?? null;
+}
+
+export function formatCustomCommandResponse(
+  response,
+  {
+    user = "",
+    username = "",
+    server = "",
+    memberCount = "",
+    userId = "",
+  } = {}
+) {
+  if (!response) return "";
+
+  return String(response)
+    .replace(/\{user\}/gi, user)
+    .replace(/\{username\}/gi, username)
+    .replace(/\{server\}/gi, server)
+    .replace(/\{memberCount\}/gi, String(memberCount))
+    .replace(/\{userId\}/gi, String(userId))
+    .slice(
+      0,
+      botConfig.customCommands?.maxResponseLength ?? 2000
+    );
+}
+
+export function getCustomCommandResponse(name, context = {}) {
+  const command = getCustomCommand(name);
+
+  if (!command || command.enabled === false) {
+    return null;
+  }
+
+  return formatCustomCommandResponse(
+    command.response,
+    context
+  );
+}
+
+export function canManageCustomCommands(member) {
+  if (!member) return false;
+
+  const permissions =
+    botConfig.customCommands?.managerPermissions ||
+    ["ManageGuild"];
+
+  return permissions.some((permission) =>
+    member.permissions?.has?.(permission)
+  );
+}
+          import { logger } from '../utils/logger.js';
 
 export const botConfig = {
   presence: {
